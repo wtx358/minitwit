@@ -180,6 +180,18 @@ def add_message():
     return redirect(url_for('timeline'))
 
 
+@app.route('/del_message/<int:id>')
+def del_message(id):
+    """Registers a new message for the user."""
+    if 'user_id' not in session:
+        abort(401)
+    db = get_db().cursor()
+    db.execute('''delete from message where author_id=%s and message_id=%s''', 
+               [session['user_id'], id])
+    flash('Your message was deleted')
+    return redirect(url_for('timeline'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Logs the user in."""
