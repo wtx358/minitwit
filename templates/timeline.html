@@ -42,7 +42,7 @@
       }}">{{ message.username }}</a></strong>
       {{ message.text }}
       <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
-      {% if g.user %}<small> | <a href="{{ url_for('del_message', id=message.message_id) }}" onclick="return confirm('Are you sure delete this message?');">Delete</a></small>{% endif %}
+      {% if g.user and g.user.user_id == message.author_id %}<small> | <a href="{{ url_for('del_message', id=message.message_id) }}" onclick="return confirm('Are you sure delete this message?');">Delete</a></small>{% endif %}
   {% else %}
     <li><em>There's no message so far.</em>
   {% endfor %}
