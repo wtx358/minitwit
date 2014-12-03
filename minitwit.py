@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import os
 import time
 import MySQLdb
 from MySQLdb.cursors import DictCursor
@@ -19,15 +20,15 @@ from flask import Flask, request, session, url_for, redirect, \
 from werkzeug import check_password_hash, generate_password_hash
 
 # configuration
-MYSQL_HOST = ''
-MYSQL_PORT = ''
-MYSQL_USER = ''
-MYSQL_PASS = ''
-MYSQL_DB = ''
+MYSQL_USER = os.getenv('MYSQL_USER') or ''
+MYSQL_PASS = os.getenv('MYSQL_PASS') or ''
+MYSQL_HOST = os.getenv('MYSQL_HOST') or ''
+MYSQL_PORT = os.getenv('MYSQL_PORT') or ''
+MYSQL_DB = os.getenv('MYSQL_DB') or ''
 
 PER_PAGE = 30
 DEBUG = True
-SECRET_KEY = "\xb5t\xdfW\xb9\xa7'\xe0}L\x9c\xa1a\x8d\xf8\x15\xb1\xa6\xe3\xae\xbf\xeb\xd5`"
+SECRET_KEY = os.getenv('SECRET_KEY') or 'hard to guess string'
 
 # create our little application :)
 app = Flask(__name__)
@@ -76,7 +77,7 @@ def format_datetime(timestamp):
 
 def gravatar_url(email, size=80):
     """Return the gravatar image for the given email address."""
-    return 'http://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
+    return 'https://secure.gravatar.com/avatar/%s?d=identicon&s=%d' % \
         (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
 
@@ -186,7 +187,7 @@ def del_message(id):
     if 'user_id' not in session:
         abort(401)
     db = get_db().cursor()
-    db.execute('''delete from message where author_id=%s and message_id=%s''', 
+    db.execute('''delete from message where author_id=%s and message_id=%s''',
                [session['user_id'], id])
     flash('Your message was deleted')
     return redirect(url_for('timeline'))
